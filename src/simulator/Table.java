@@ -11,10 +11,29 @@ public class Table {
 	private int tbl;
 	private int tc;
 	
+	private PoliticaRemplazo politicaRemplazo;
+	
+	/**
+	 * Politica de reemplazo de la memoria cache.
+	 */
+	public enum PoliticaRemplazo {
+	    FIFO, LRU
+	}
+	
 	public Table(int[][] mc, int tpal, int tbl, int tc) {
 		mc = this.mc;
 		tpal = this.tpal;
 		tbl = this.tbl;
 		tc = this.tc;
 	}
+
+	public PoliticaRemplazo getPoliticaRemplazo() {
+		return politicaRemplazo;
+	}
+
+	public void setPoliticaReemplazo(PoliticaRemplazo pr) {
+		this.politicaRemplazo = pr;
+	}
+	
+	
 }
