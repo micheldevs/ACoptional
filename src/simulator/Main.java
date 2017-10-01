@@ -35,7 +35,7 @@ public class Main {
 				System.out.print("\nValor no válido. ");
 			}
 			
-		} while(tb != 4 && tb != 8);
+		} while(tb != 32 && tb != 64);
 		
 		System.out.println("\n");
 		
