@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class Test {
 	
-	//Cambiame para modificar el numero de bloques en la memori cache
+	//Cambiame para modificar el numero de bloques en la memoria cache
 	private static final int BLOQ_MC = 8;
 
 	public static void main(String[] args) {
