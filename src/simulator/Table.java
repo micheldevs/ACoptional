@@ -35,23 +35,44 @@ public class Table {
 		this.politicaRemplazo = pr;
 	}
 	
-	public void imprimirTabla() {
-		System.out.println("  ocup  mod  tag  rem || bloque");
-		System.out.println("---------------------------------");
+	public void imprimeTabla(int[][] mc, int tamConj) {
 		
-		for(int i = 0; i < mc.length; i++) {
-			for(int j = 0; j < mc[i].length; j++) {
-				System.out.print(mc[i][j] + " ");	
-			}
-				System.out.print(" || " + bloqc[i]);
+		int bloq = 0;
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("ocup\tmod\ttag\trem\t||\tbloque\n");
+		sb.append("----------------------------------------------------\n");
+		
+		int size = mc[0].length - 1;
+		for (int i = 0; i < mc.length; i++) {
+			for (int j = 0; j < mc[i].length; j++) {
 				
-				if(i < tc) {
-					System.out.println("---------------------------------");
+				if(j < size) { 						//Si NO es la ultima columna
+					sb.append(mc[i][j]+"\t");
+				} else {							//Si ES la ultima columna
+					sb.append("||\t");
+					if(mc[i][size] != -1) { 	//Si NO es -1 (NO esta vacio)
+						sb.append("b" + mc[i][size]);
+					} else {					//Si ES -1 (ESTA vacio)
+						sb.append("---");
+					}
 				}
 				
-				//Falta completar pero va por buen camino.
-
+			}
+			
+			bloq++;
+			
+			if(bloq == tamConj) {
+				sb.append("\n----------------------------------------------------");
+				bloq = 0;
+			}
+			
+			sb.append("\n");
+			
 		}
+		
+		System.out.println(sb.toString());
+		
 	}
 	
 	public int calculaPal(int dir) { //Se le pasa la dirección byte para obtener la palabra.

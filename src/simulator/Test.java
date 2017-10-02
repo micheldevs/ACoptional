@@ -50,13 +50,13 @@ public class Test {
 		for (int i = 0; i < mc.length; i++) {
 			for (int j = 0; j < mc[i].length; j++) {
 				
-				if(j < size) { //Si NO es la ultima columna
+				if(j < size) { 						//Si NO es la ultima columna
 					sb.append(mc[i][j]+"\t");
-				} else {//Si ES la ultima columna
+				} else {							//Si ES la ultima columna
 					sb.append("||\t");
-					if(mc[i][size] != -1) { //Si NO es -1 (NO esta vacio)
+					if(mc[i][size] != -1) { 	//Si NO es -1 (NO esta vacio)
 						sb.append("b" + mc[i][size]);
-					} else {//Si ES -1 (ESTA vacio)
+					} else {					//Si ES -1 (ESTA vacio)
 						sb.append("---");
 					}
 				}
