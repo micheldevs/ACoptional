@@ -54,5 +54,32 @@ public class Table {
 		}
 	}
 	
+	public int calculaPal(int dir) { //Se le pasa la dirección byte para obtener la palabra.
+		return dir/tpal;
+	}
+	
+	public int calculaBloqprin(int pal) {
+		return pal/(tbl/tpal); //Nos dará el tamaño de bloques en palabras con lo que podremos descubrir el bloque de la MP.
+	}
+	
+	public int calculaConj(int bp, int numconj) {
+		return bp%numconj;
+	}
+	
+	public int calculaTag(int bp, int numconj) {
+		return bp/numconj;
+	}
+
+	public void imprimirResultado(int dir, int numconj) {
+		int bp = 0, pal = 0, tag = 0, conj = 0;
+		
+		pal = calculaPal(dir);
+		bp = calculaBloqprin(pal);
+		conj = calculaConj(bp, numconj);
+		tag = calculaTag(bp, numconj);
+		
+		System.out.println(">Direccion: " + dir + " - Palabra: " + pal + " - Bloque: " + bp);
+		System.out.println(">Conjunto: " + conj + " - Tag: " + tag);
+	}
 	
 }
