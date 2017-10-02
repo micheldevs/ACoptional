@@ -47,6 +47,12 @@ public class Table {
 		this.politicaRemplazo = pr;
 	}
 	
+	/**
+	 * Imprime por consola la informacion de la memoria cache y haciendo una separacion entre cada distinto conjunto de bloques
+	 * 
+	 * @param mc Array con la informacion de la cache
+	 * @param tamConj El numero de bloques por conjunto
+	 */
 	public void imprimeTabla(int[][] mc, int tamConj) {
 		
 		int bloq = 0;
@@ -87,11 +93,35 @@ public class Table {
 		
 	}
 	
+	public int getTamPal() {
+		return tpal;
+	}
+
+	public void setTamPal(int tamPal) {
+		this.tpal = tamPal;
+	}
+
+	public int getTamBloq() {
+		return tbl;
+	}
+
+	public void setTamBloq(int tamBloq) {
+		this.tbl = tamBloq;
+	}
+
+	public int getTamCache() {
+		return tc;
+	}
+
+	public void setTamCache(int tamCache) {
+		this.tc = tamCache;
+	}
+	
 	public int calculaPal(int dir) { //Se le pasa la dirección byte para obtener la palabra.
 		return dir/tpal;
 	}
 	
-	public int calculaBloqprin(int pal) {
+	public int calculaBloqPrin(int pal) {
 		return pal/(tbl/tpal); //Nos dará el tamaño de bloques en palabras con lo que podremos descubrir el bloque de la MP.
 	}
 	
@@ -107,7 +137,7 @@ public class Table {
 		int bp = 0, pal = 0, tag = 0, conj = 0;
 		
 		pal = calculaPal(dir);
-		bp = calculaBloqprin(pal);
+		bp = calculaBloqPrin(pal);
 		conj = calculaConj(bp, numconj);
 		tag = calculaTag(bp, numconj);
 		
