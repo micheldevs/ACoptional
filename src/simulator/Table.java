@@ -1,13 +1,14 @@
 package simulator;
 
+import java.util.Arrays;
+
 public class Table {
 	
 	public final int MAX_TPAL = 8;
 	public final int MAX_TBL = 64;
 	public final int MAX_TC = 8;
 	
-	public static int[][] mc = {{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}};
-	public static String[] bloqc = {"---", "---", "---", "---", "---", "---", "---", "---"};
+	private int[][] mc;
 	private int tpal;
 	private int tbl;
 	private int tc;
@@ -25,6 +26,17 @@ public class Table {
 		tpal = this.tpal;
 		tbl = this.tbl;
 		tc = this.tc;
+		
+		this.mc = new int[MAX_TC][5];
+		
+		//Inicializar a -1 la ultima columna de cada fila
+		int lastIndex = mc[0].length - 1;
+		for (int[] i : mc) {
+			i[lastIndex] = -1;
+		}
+		
+		//System.out.println(Arrays.deepToString(mc)); //Print array content
+		
 	}
 
 	public PoliticaRemplazo getPoliticaRemplazo() {
