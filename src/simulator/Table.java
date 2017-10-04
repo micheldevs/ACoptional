@@ -13,6 +13,9 @@ public class Table {
 	private int tbl;
 	private int tc;
 
+	public int aciertos = 0;
+	public int intentos = 0;
+
 	private PoliticaRemplazo politicaRemplazo;
 
 	/**
@@ -153,7 +156,7 @@ public class Table {
 		//>T_acc: 30 ciclos
 		sb.append(">Tiempo de acceso: busqueda cache, 2");
 		int tacc = 2;
-		
+
 		if(!estado) {
 			if(operacion == 0) {
 				if(dirty == 0) {
@@ -173,9 +176,62 @@ public class Table {
 				}
 			}
 		}
-		
+
 		sb.append("/n");
 		sb.append(">T_acc: " + tacc + " ciclos");
 	}
+
+	public void colocaBloq(int dir) {
+		int bp = calculaBloqPrin(calculaPal(dir));
+		int cj = calculaConj(bp, 8/tc);
+
+		if(8/tc == 1) {
+			for(int i = 0; i < mc.length; i++) {
+				for(int j = 0; i < mc[0].length; j++) {
+
+				}
+			}
+		} else if(8/tc == 2) {
+			for(int i = 0; i < mc.length; i++) {
+				for(int j = 0; i < mc[0].length; j++) {
+
+				}
+			}
+		} else if(8/tc == 4) {
+			for(int i = 0; i < mc.length; i++) {
+				for(int j = 0; i < mc[0].length; j++) {
+
+				}
+			}
+		} else if(8/tc == 8) {
+			for(int i = 0; i < mc.length; i++) {
+				for(int j = 0; i < mc[0].length; j++) {
+
+				}
+			}
+		}
+	}
+	
+	public void calculaTiempoTot() {
+		float h = (float) aciertos/intentos;
+		System.out.println("Referencias: " + intentos + " -- Aciertos: " + aciertos + " -- Tasa de aciertos, h = " + h);
+		System.out.println("Tiempo total = " + h*2+(1-h)*(2+(21+((tbl/tpal)-1))*2)+(1-h)*(2+21+((tbl/tpal)-1)));
+		System.exit(0);
+	}
+
+	//	ocup mod tag rem || bloque
+	//	 -----------------------------------
+	//	 0 0 0 0 || ---
+	//	 0 0 0 0 || ---
+	//	 --------------------------------
+	//	 0 0 0 0 || ---
+	//	 0 0 0 0 || ---
+	//	 --------------------------------
+	//	 0 0 0 0 || ---
+	//	 0 0 0 0 || ---
+	//	 --------------------------------
+	//	 1 1 8 0 || b35
+	//	 0 0 0 0 || ---
+	//	 --------------------------------
 
 }
