@@ -195,7 +195,7 @@ public class Table {
 
 					estado = true; //El estado de la operación se cambia si hay acierto o fallo.
 
-					if(politicaRemplazo == politicaRemplazo.LRU) { //Si se utiliza LRU.
+					if(politicaRemplazo == PoliticaRemplazo.LRU) { //Si se utiliza LRU.
 						lrufif[i] = 0;
 					} else {
 						lrufif[i]++;
@@ -227,7 +227,7 @@ public class Table {
 
 						estado = true; //El estado de la operación se cambia si hay acierto o fallo.
 
-						if(politicaRemplazo == politicaRemplazo.LRU) { //Si se utiliza LRU.
+						if(politicaRemplazo == PoliticaRemplazo.LRU) { //Si se utiliza LRU.
 							lrufif[i] = 0;
 						} else {
 							lrufif[i]++;
@@ -257,7 +257,7 @@ public class Table {
 
 						estado = true; //El estado de la operación se cambia si hay acierto o fallo.
 
-						if(politicaRemplazo == politicaRemplazo.LRU) { //Si se utiliza LRU.
+						if(politicaRemplazo == PoliticaRemplazo.LRU) { //Si se utiliza LRU.
 							lrufif[i] = 0;
 						} else {
 							lrufif[i]++;
@@ -298,7 +298,7 @@ public class Table {
 
 						estado = true; //El estado de la operación se cambia si hay acierto o fallo.
 
-						if(politicaRemplazo == politicaRemplazo.LRU) { //Si se utiliza LRU.
+						if(politicaRemplazo == PoliticaRemplazo.LRU) { //Si se utiliza LRU.
 							lrufif[i] = 0;
 						} else {
 							lrufif[i]++;
@@ -329,7 +329,7 @@ public class Table {
 
 						estado = true; //El estado de la operación se cambia si hay acierto o fallo.
 
-						if(politicaRemplazo == politicaRemplazo.LRU) { //Si se utiliza LRU.
+						if(politicaRemplazo == PoliticaRemplazo.LRU) { //Si se utiliza LRU.
 							lrufif[i] = 0;
 						} else {
 							lrufif[i]++;
@@ -360,7 +360,7 @@ public class Table {
 
 						estado = true; //El estado de la operación se cambia si hay acierto o fallo.
 
-						if(politicaRemplazo == politicaRemplazo.LRU) { //Si se utiliza LRU.
+						if(politicaRemplazo == PoliticaRemplazo.LRU) { //Si se utiliza LRU.
 							lrufif[i] = 0;
 						} else {
 							lrufif[i]++;
@@ -390,7 +390,7 @@ public class Table {
 
 						estado = true; //El estado de la operación se cambia si hay acierto o fallo.
 
-						if(politicaRemplazo == politicaRemplazo.LRU) { //Si se utiliza LRU.
+						if(politicaRemplazo == PoliticaRemplazo.LRU) { //Si se utiliza LRU.
 							lrufif[i] = 0;
 						} else {
 							lrufif[i]++;
