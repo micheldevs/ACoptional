@@ -183,60 +183,248 @@ public class Table {
 		sb.append(">T_acc: " + tacc + " ciclos");
 	}
 
-	public void colocaBloq(int dir) {
+	public void colocaBloq(int dir, int operacion, int dirty) {
 		intentos++; //Se incrementa los intentos por cada dirección que se mete.
 		int bp = calculaBloqPrin(calculaPal(dir));
 		int cj = calculaConj(bp, 8/tc);
 
 		if(8/tc == 1) {
 			for(int i = 0; i < mc.length; i++) {
-					if(mc[i][7] == bp) {
+				if(mc[i][4] == bp) {
+					aciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
+
+					estado = true; //El estado de la operación se cambia si hay acierto o fallo.
+
+					if(politicaRemplazo == politicaRemplazo.LRU) { //Si se utiliza LRU.
+						lrufif[i] = 0;
+					} else {
+						lrufif[i]++;
+					}
+					
+					break;
+				} else {
+					if(i == 7) {
+						estado = false;
+						int maxj = 0; //Indice del más mayor.
+						for(int j = 0; j < mc.length; j++) {
+							if(lrufif[maxj] < lrufif[j]) {
+								maxj = j;
+							}
+						}
+
+						mc[maxj][4] = bp; //Se traslada el bloque.
+						lrufif[maxj] = 0;
+
+					}
+				}
+			}
+		} else if(8/tc == 2) {
+
+			if(cj == 0) {
+				for(int i = 0; i < 4; i++) {
+					if(mc[i][4] == bp) {
 						aciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
-						
+
 						estado = true; //El estado de la operación se cambia si hay acierto o fallo.
-						
+
 						if(politicaRemplazo == politicaRemplazo.LRU) { //Si se utiliza LRU.
 							lrufif[i] = 0;
 						} else {
 							lrufif[i]++;
 						}
+						
+						break;
 					} else {
-						if(i == 7) {
+						if(i == 3) {
 							estado = false;
 							int maxj = 0; //Indice del más mayor.
-							for(int j = 0; j < mc.length; j++) {
+							for(int j = 0; j < 4; j++) {
 								if(lrufif[maxj] < lrufif[j]) {
 									maxj = j;
 								}
 							}
-							
-							mc[maxj][7] = bp; //Se traslada el bloque.
+
+							mc[maxj][4] = bp; //Se traslada el bloque.
 							lrufif[maxj] = 0;
-							
+
 						}
 					}
-			}
-		} else if(8/tc == 2) {
-			for(int i = 0; i < mc.length; i++) {
-				for(int j = 7; i >= 0; j--) {
+				}
+			} else {
+				for(int i = 4; i < mc.length; i++) {
+					if(mc[i][4] == bp) {
+						aciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
 
+						estado = true; //El estado de la operación se cambia si hay acierto o fallo.
+
+						if(politicaRemplazo == politicaRemplazo.LRU) { //Si se utiliza LRU.
+							lrufif[i] = 0;
+						} else {
+							lrufif[i]++;
+						}
+						
+						break;
+					} else {
+						if(i == 7) {
+							estado = false;
+							int maxj = 0; //Indice del más mayor.
+							for(int j = 4; j < mc.length; j++) {
+								if(lrufif[maxj] < lrufif[j]) {
+									maxj = j;
+								}
+							}
+
+							mc[maxj][4] = bp; //Se traslada el bloque.
+							lrufif[maxj] = 0;
+
+						}
+					}
 				}
 			}
-		} else if(8/tc == 4) {
-			for(int i = 0; i < mc.length; i++) {
-				for(int j = 0; i < mc[0].length; j++) {
 
+
+
+			// De cara a más funcionalidades.
+			//				for(int j = 7; i >= 0; j--) {
+			//
+			//				}
+
+		} else if(8/tc == 4) {
+			if(cj == 0) {
+				for(int i = 0; i < 2; i++) {
+					
+					if(mc[i][4] == bp) {
+						aciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
+
+						estado = true; //El estado de la operación se cambia si hay acierto o fallo.
+
+						if(politicaRemplazo == politicaRemplazo.LRU) { //Si se utiliza LRU.
+							lrufif[i] = 0;
+						} else {
+							lrufif[i]++;
+						}
+						
+						break;
+					} else {
+						if(i == 1) {
+							estado = false;
+							int maxj = 0; //Indice del más mayor.
+							for(int j = 0; j < 2; j++) {
+								if(lrufif[maxj] < lrufif[j]) {
+									maxj = j;
+								}
+							}
+
+							mc[maxj][4] = bp; //Se traslada el bloque.
+							lrufif[maxj] = 0;
+
+						}
+					}
+				}
+			} else if(cj == 1) {
+				for(int i = 2; i < 4; i++) {
+					
+					if(mc[i][4] == bp) {
+						aciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
+
+						estado = true; //El estado de la operación se cambia si hay acierto o fallo.
+
+						if(politicaRemplazo == politicaRemplazo.LRU) { //Si se utiliza LRU.
+							lrufif[i] = 0;
+						} else {
+							lrufif[i]++;
+						}
+						
+						break;
+					} else {
+						if(i == 3) {
+							estado = false;
+							int maxj = 2; //Indice del más mayor.
+							for(int j = 2; j < 4; j++) {
+								if(lrufif[maxj] < lrufif[j]) {
+									maxj = j;
+								}
+							}
+
+							mc[maxj][4] = bp; //Se traslada el bloque.
+							lrufif[maxj] = 0;
+
+						}
+					}
+				}
+			} else if(cj == 2) {
+				for(int i = 4; i < 6; i++) {
+					
+					if(mc[i][4] == bp) {
+						aciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
+
+						estado = true; //El estado de la operación se cambia si hay acierto o fallo.
+
+						if(politicaRemplazo == politicaRemplazo.LRU) { //Si se utiliza LRU.
+							lrufif[i] = 0;
+						} else {
+							lrufif[i]++;
+						}
+						
+						break;
+					} else {
+						if(i == 5) {
+							estado = false;
+							int maxj = 4; //Indice del más mayor.
+							for(int j = 4; j < 6; j++) {
+								if(lrufif[maxj] < lrufif[j]) {
+									maxj = j;
+								}
+							}
+
+							mc[maxj][4] = bp; //Se traslada el bloque.
+							lrufif[maxj] = 0;
+
+						}
+					}
+				}
+			} else if(cj == 3) {
+				for(int i = 6; i < mc.length; i++) {
+					if(mc[i][4] == bp) {
+						aciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
+
+						estado = true; //El estado de la operación se cambia si hay acierto o fallo.
+
+						if(politicaRemplazo == politicaRemplazo.LRU) { //Si se utiliza LRU.
+							lrufif[i] = 0;
+						} else {
+							lrufif[i]++;
+						}
+						
+						break;
+					} else {
+						if(i == 7) {
+							estado = false;
+							int maxj = 6; //Indice del más mayor.
+							for(int j = 6; j < mc.length; j++) {
+								if(lrufif[maxj] < lrufif[j]) {
+									maxj = j;
+								}
+							}
+
+							mc[maxj][7] = bp; //Se traslada el bloque.
+							lrufif[maxj] = 0;
+
+						}
+					}
 				}
 			}
 		} else if(8/tc == 8) {
-			for(int i = 0; i < mc.length; i++) {
-				for(int j = 0; i < mc[0].length; j++) {
-
-				}
+			if(mc[cj][4] == bp) {
+				aciertos++;
+				estado = true;
+			} else {
+				estado = false;
+				mc[cj][4] = bp;
 			}
 		}
 	}
-	
+
 	public void calculaTiempoTot() {
 		float h = (float) aciertos/intentos;
 		System.out.println("Referencias: " + intentos + " -- Aciertos: " + aciertos + " -- Tasa de aciertos, h = " + h);
