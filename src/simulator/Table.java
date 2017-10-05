@@ -1,6 +1,7 @@
 package simulator;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 
 public class Table {
 
@@ -183,7 +184,7 @@ public class Table {
 		sb.append(">T_acc: " + tacc + " ciclos");
 	}
 
-	public void colocaBloq(int dir, int operacion, int dirty) {
+	public void colocaBloq(int dir, int operacion) {
 		intentos++; //Se incrementa los intentos por cada dirección que se mete.
 		int bp = calculaBloqPrin(calculaPal(dir));
 		int cj = calculaConj(bp, 8/tc);
@@ -191,6 +192,11 @@ public class Table {
 		if(8/tc == 1) {
 			for(int i = 0; i < mc.length; i++) {
 				if(mc[i][4] == bp) {
+					
+					if(operacion == 1) { //Notifica que ha modificado.
+						mc[cj][1] = 1;
+					}
+					
 					aciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
 
 					estado = true; //El estado de la operación se cambia si hay acierto o fallo.
@@ -211,7 +217,10 @@ public class Table {
 								maxj = j;
 							}
 						}
-
+						
+						mc[maxj][0] = 1;
+						mc[maxj][1] = 0;
+						mc[maxj][2] = bp;
 						mc[maxj][4] = bp; //Se traslada el bloque.
 						lrufif[maxj] = 0;
 
@@ -223,6 +232,11 @@ public class Table {
 			if(cj == 0) {
 				for(int i = 0; i < 4; i++) {
 					if(mc[i][4] == bp) {
+						
+						if(operacion == 1) { //Notifica que ha modificado.
+							mc[cj][1] = 1;
+						}
+						
 						aciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
 
 						estado = true; //El estado de la operación se cambia si hay acierto o fallo.
@@ -243,7 +257,10 @@ public class Table {
 									maxj = j;
 								}
 							}
-
+							
+							mc[maxj][0] = 1;
+							mc[maxj][1] = 0;
+							mc[maxj][2] = bp/2;
 							mc[maxj][4] = bp; //Se traslada el bloque.
 							lrufif[maxj] = 0;
 
@@ -253,6 +270,11 @@ public class Table {
 			} else {
 				for(int i = 4; i < mc.length; i++) {
 					if(mc[i][4] == bp) {
+						
+						if(operacion == 1) { //Notifica que ha modificado.
+							mc[cj][1] = 1;
+						}
+						
 						aciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
 
 						estado = true; //El estado de la operación se cambia si hay acierto o fallo.
@@ -273,7 +295,11 @@ public class Table {
 									maxj = j;
 								}
 							}
-
+							
+							
+							mc[maxj][0] = 1;
+							mc[maxj][1] = 0;
+							mc[maxj][2] = bp/2;
 							mc[maxj][4] = bp; //Se traslada el bloque.
 							lrufif[maxj] = 0;
 
@@ -294,6 +320,11 @@ public class Table {
 				for(int i = 0; i < 2; i++) {
 					
 					if(mc[i][4] == bp) {
+						
+						if(operacion == 1) { //Notifica que ha modificado.
+							mc[cj][1] = 1;
+						}
+						
 						aciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
 
 						estado = true; //El estado de la operación se cambia si hay acierto o fallo.
@@ -314,7 +345,10 @@ public class Table {
 									maxj = j;
 								}
 							}
-
+							
+							mc[maxj][0] = 1;
+							mc[maxj][1] = 0;
+							mc[maxj][2] = bp/4;
 							mc[maxj][4] = bp; //Se traslada el bloque.
 							lrufif[maxj] = 0;
 
@@ -325,6 +359,11 @@ public class Table {
 				for(int i = 2; i < 4; i++) {
 					
 					if(mc[i][4] == bp) {
+						
+						if(operacion == 1) { //Notifica que ha modificado.
+							mc[cj][1] = 1;
+						}
+						
 						aciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
 
 						estado = true; //El estado de la operación se cambia si hay acierto o fallo.
@@ -345,7 +384,10 @@ public class Table {
 									maxj = j;
 								}
 							}
-
+							
+							mc[maxj][0] = 1;
+							mc[maxj][1] = 0;
+							mc[maxj][2] = bp/4;
 							mc[maxj][4] = bp; //Se traslada el bloque.
 							lrufif[maxj] = 0;
 
@@ -356,6 +398,11 @@ public class Table {
 				for(int i = 4; i < 6; i++) {
 					
 					if(mc[i][4] == bp) {
+						
+						if(operacion == 1) { //Notifica que ha modificado.
+							mc[cj][1] = 1;
+						}
+						
 						aciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
 
 						estado = true; //El estado de la operación se cambia si hay acierto o fallo.
@@ -376,7 +423,10 @@ public class Table {
 									maxj = j;
 								}
 							}
-
+							
+							mc[maxj][0] = 1;
+							mc[maxj][1] = 0;
+							mc[maxj][2] = bp/4;
 							mc[maxj][4] = bp; //Se traslada el bloque.
 							lrufif[maxj] = 0;
 
@@ -386,6 +436,11 @@ public class Table {
 			} else if(cj == 3) {
 				for(int i = 6; i < mc.length; i++) {
 					if(mc[i][4] == bp) {
+						
+						if(operacion == 1) { //Notifica que ha modificado.
+							mc[cj][1] = 1;
+						}
+						
 						aciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
 
 						estado = true; //El estado de la operación se cambia si hay acierto o fallo.
@@ -406,8 +461,13 @@ public class Table {
 									maxj = j;
 								}
 							}
-
-							mc[maxj][7] = bp; //Se traslada el bloque.
+							
+							
+							mc[maxj][0] = 1;
+							mc[maxj][1] = 0;
+							mc[maxj][2] = bp/4;
+							mc[maxj][4] = bp; //Se traslada el bloque.
+							
 							lrufif[maxj] = 0;
 
 						}
@@ -416,10 +476,18 @@ public class Table {
 			}
 		} else if(8/tc == 8) {
 			if(mc[cj][4] == bp) {
+				
+				if(operacion == 1) {
+					mc[cj][1] = 1;
+				}
+				
 				aciertos++;
 				estado = true;
 			} else {
 				estado = false;
+				mc[cj][0] = 1;
+				mc[cj][1] = 0;
+				mc[cj][2] = bp/8;
 				mc[cj][4] = bp;
 			}
 		}
