@@ -67,6 +67,7 @@ public class Main {
 		
 		System.out.println("\n");
 		
+		Table tab = new Table(tpal, tb, tc);
 		
 		//TODO: Comprobación de introducción correcta de la dirección
 		while(db != -1) {
@@ -74,7 +75,14 @@ public class Main {
 			db = sc.nextInt();
 			System.out.println("Load (0) / Store (1)\n>");
 			op = sc.nextInt();
+			
+			tab.colocaBloq(db, op);
+			tab.imprimirResultado(db, 8/tc);
+			tab.imprimirEstado(op, 0, tb/tpal);
+			tab.imprimeTabla(tab.getMc(), tc);
 		}
+		
+		tab.calculaTiempoTot();
 	}
 	
 }

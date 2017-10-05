@@ -52,7 +52,11 @@ public class Table {
 	public void setPoliticaReemplazo(PoliticaRemplazo pr) {
 		this.politicaRemplazo = pr;
 	}
-
+	
+	public int[][] getMc() {
+		return mc;
+	}
+	
 	/**
 	 * Imprime por consola la informacion de la memoria cache y haciendo una separacion entre cada distinto conjunto de bloques
 	 * 
@@ -149,9 +153,15 @@ public class Table {
 
 		System.out.println(">Direccion: " + dir + " - Palabra: " + pal + " - Bloque: " + bp);
 		System.out.println(">Conjunto: " + conj + " - Tag: " + tag);
+		
+		if(estado == true) {
+			System.out.println(">ACIERTO EN LA CACHE");
+		} else {
+			System.out.println(">FALLO EN LA CACHE");
+		}
 	}
 
-	public void imprimirEstado(boolean estado, int operacion, int dirty, int tambloqenpals) { 
+	public void imprimirEstado(int operacion, int dirty, int tambloqenpals) { 
 		/*El estado determinará fallo o acierto, operación si lectura 0 o escritura 1, dirty si sucio 1 o limpio 0 y tambloqenpals,
 		el tamaño de bloque en palabras.*/
 		StringBuilder sb = new StringBuilder();
