@@ -9,6 +9,8 @@ public class Table {
 	public final int MAX_TC = 8;
 
 	private int[][] mc;
+	private int[] lrufif = {0, 0, 0, 0, 0, 0, 0, 0};
+	private boolean estado = false;
 	private int tpal;
 	private int tbl;
 	private int tc;
@@ -182,18 +184,41 @@ public class Table {
 	}
 
 	public void colocaBloq(int dir) {
+		intentos++; //Se incrementa los intentos por cada dirección que se mete.
 		int bp = calculaBloqPrin(calculaPal(dir));
 		int cj = calculaConj(bp, 8/tc);
 
 		if(8/tc == 1) {
 			for(int i = 0; i < mc.length; i++) {
-				for(int j = 0; i < mc[0].length; j++) {
-
-				}
+					if(mc[i][7] == bp) {
+						aciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
+						
+						estado = true; //El estado de la operación se cambia si hay acierto o fallo.
+						
+						if(politicaRemplazo == politicaRemplazo.LRU) { //Si se utiliza LRU.
+							lrufif[i] = 0;
+						} else {
+							lrufif[i]++;
+						}
+					} else {
+						if(i == 7) {
+							estado = false;
+							int maxj = 0; //Indice del más mayor.
+							for(int j = 0; j < mc.length; j++) {
+								if(lrufif[maxj] < lrufif[j]) {
+									maxj = j;
+								}
+							}
+							
+							mc[maxj][7] = bp; //Se traslada el bloque.
+							lrufif[maxj] = 0;
+							
+						}
+					}
 			}
 		} else if(8/tc == 2) {
 			for(int i = 0; i < mc.length; i++) {
-				for(int j = 0; i < mc[0].length; j++) {
+				for(int j = 7; i >= 0; j--) {
 
 				}
 			}
