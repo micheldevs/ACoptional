@@ -59,11 +59,11 @@ public class Main {
 			System.out.println("Escriba política de remplazo deseada: 0 (FIFO) - 1 (LRU)\n>");
 			pr = sc.nextInt();
 			
-			if(pr != 1 && pr != 2) {
+			if(pr != 0 && pr != 1) {
 				System.out.print("\nValor no válido. ");
 			}
 			
-		} while(pr != 1 && pr != 2);
+		} while(pr != 0 && pr != 1);
 		
 		System.out.println("\n");
 		
@@ -76,6 +76,8 @@ public class Main {
 			System.out.println("Load (0) / Store (1)\n>");
 			op = sc.nextInt();
 			
+			
+
 			tab.colocaBloq(db, op);
 			tab.imprimirResultado(db, 8/tc);
 			tab.imprimirEstado(op, 0, tb/tpal);

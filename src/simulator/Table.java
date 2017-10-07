@@ -29,9 +29,9 @@ public class Table {
 	}
 
 	public Table(int tpal, int tbl, int tc) {
-		tpal = this.tpal;
-		tbl = this.tbl;
-		tc = this.tc;
+		this.tpal = tpal;
+		this.tbl = tbl;
+		this.tc = tc;
 
 		this.mc = new int[MAX_TC][5];
 
