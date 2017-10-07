@@ -11,12 +11,14 @@ public class Table {
 	private int tiempoMemCache = 2; //Ciclos necesarios para el acceso a la memoria cache	
 	private int tiempoMemPrincipal = 21; //Ciclos necesarios para el acceso a la memoria principal
 	private int tiempoBuffer = 1; // Ciclos necesarios para el buffer
-	private int tiempoBloque = -1; // Ciclos necesarios para transferir el bloque 
+	private int tiempoBloque = -1; // Ciclos necesarios para transferir el bloque
+	
+	private int totalCiclos = 0;
 
 	private int[][] mc;
 	private int[] lrufif = {0, 0, 0, 0, 0, 0, 0, 0};
 	
-	private LinkedList<Integer> fifo = new LinkedList<Integer>();
+	private LinkedList<Integer> listaBloques = new LinkedList<Integer>();
 	
 	private int tamPal;
 	private int tamBloq;
@@ -38,7 +40,7 @@ public class Table {
 	/**
 	 * Tipo de operacion.<br>
 	 * <b>LD</b> - lectura<br>
-	 * <b>ST</b> - escritura<br>
+	 * <b>ST</b> - escritura
 	 */
 	public enum TipoOperacion {
 		LD(0),
@@ -248,7 +250,7 @@ public class Table {
 	}
 
 	public int calculaBloqPrin(int pal) {
-		return pal/(getPalabrasDentroBloque()); //Nos dará el tamaño de bloques en palabras con lo que podremos descubrir el bloque de la MP.
+		return pal/(getPalabrasDentroBloque()); // Nos dará el tamaño de bloques en palabras con lo que podremos descubrir el bloque de la MP.
 	}
 
 	public int calculaConj(int bp, int numconj) {
@@ -260,6 +262,7 @@ public class Table {
 	}
 
 	public void imprimirResultado(int dir, int numconj) {
+		
 		int bp = 0, pal = 0, tag = 0, conj = 0;
 
 		pal = calculaPal(dir);
@@ -267,14 +270,15 @@ public class Table {
 		conj = calculaConj(bp, numconj);
 		tag = calculaTag(bp, numconj);
 
-		System.out.println(">Direccion: " + dir + " - Palabra: " + pal + " - Bloque: " + bp);
-		System.out.println(">Conjunto: " + conj + " - Tag: " + tag);
+		System.out.println("> Direccion: " + dir + " - Palabra: " + pal + " - Bloque: " + bp);
+		System.out.println("> Conjunto: " + conj + " - Tag: " + tag);
 
-		if(acierto == true) {
-			System.out.println(">ACIERTO EN LA CACHE");
+		if(acierto) {
+			System.out.println("> ACIERTO EN LA CACHE");
 		} else {
-			System.out.println(">FALLO EN LA CACHE");
+			System.out.println("> FALLO EN LA CACHE");
 		}
+		
 	}
 
 	//>Tiempo de acceso: busqueda cache, 2 -- transferir bloque (M>C o C>M), 21+7
@@ -306,7 +310,7 @@ public class Table {
 				sb.append("con reemplazo y dirty, " + getTiempoMemPrincipal() + " + " + tempVal + " + " + getTiempoMemPrincipal() + " + " + tempVal);	
 			}
 		}
-		sb.append("/n> T_acc: " + getCiclos(acierto, isDirty(bloqCache)) + " ciclos");
+		sb.append("\n> T_acc: " + getCiclos(acierto, isDirty(bloqCache)) + " ciclos");
 		
 		System.out.println(sb.toString());
 	}
@@ -645,10 +649,8 @@ public class Table {
 	}
 
 	public void calculaTiempoTot() {
-		float h = getTasaAcierto();
-		System.out.println("Referencias: " + numReferencias + " -- Aciertos: " + numAciertos + " -- Tasa de aciertos, h = " + h);
-		System.out.println("Tiempo total = " + h*2+(1-h)*(2+(21+((tamBloq/tamPal)-1))*2)+(1-h)*(2+21+((tamBloq/tamPal)-1)));
-		System.exit(0);
+		System.out.printf("Referencias: %d -- Aciertos: %d -- Tasa de aciertos, h = %.2f\n", numReferencias, numAciertos, getTasaAcierto());
+		System.out.println("Tiempo total = " + getTotalCiclos());
 	}
 
 	//	ocup mod tag rem || bloque
@@ -701,9 +703,26 @@ public class Table {
 			}
 
 		} 
-
+		
 		return ciclos;
-
+	}
+	
+	/**
+	 * Obtener los ciclos que ha tardado en total
+	 * 
+	 * @return los ciclos tardados
+	 */
+	public int getTotalCiclos() {
+		return totalCiclos;
+	}
+	
+	/**
+	 * Poner los ciclos que ha tardado en total
+	 * 
+	 * @param totalCiclos los ciclos tardados
+	 */
+	public void setTotalCiclos(int totalCiclos) {
+		this.totalCiclos = totalCiclos;
 	}
 	
 	// TODO: Comprobar que este bien VVVVVVVVVVVV
