@@ -1,6 +1,5 @@
 package simulator;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 
 public class Table {
@@ -8,7 +7,7 @@ public class Table {
 	public final int MAX_TPAL = 8;
 	public final int MAX_TBL = 64;
 	public final int MAX_TC = 8;
-	
+
 	private int tiempoMemCache = 2; //Ciclos necesarios para el acceso a la memoria cache	
 	private int tiempoMemPrincipal = 21; //Ciclos necesarios para el acceso a la memoria principal
 	private int tiempoBuffer = 1; // Ciclos necesarios para el buffer
@@ -16,14 +15,16 @@ public class Table {
 
 	private int[][] mc;
 	private int[] lrufif = {0, 0, 0, 0, 0, 0, 0, 0};
+	
 	private LinkedList<Integer> fifo = new LinkedList<Integer>();
-	private boolean estado = false;
+	
 	private int tamPal;
 	private int tamBloq;
 	private int tamCache;
 
-	private int aciertos;
-	private int referencias;
+	private boolean acierto = false;
+	private int numAciertos;
+	private int numReferencias;
 
 	private PoliticaRemplazo politicaRemplazo;
 
@@ -32,6 +33,32 @@ public class Table {
 	 */
 	public enum PoliticaRemplazo {
 		FIFO, LRU
+	}
+
+	/**
+	 * Tipo de operacion.<br>
+	 * <b>LD</b> - lectura<br>
+	 * <b>ST</b> - escritura<br>
+	 */
+	public enum TipoOperacion {
+		LD(0),
+		ST(1);	
+
+		private final int op;
+	
+		private TipoOperacion(int op) {
+			this.op = op;
+		}
+	
+		/**
+		 * Optener el valor del {@code enum}
+		 * 
+		 * @return el valor
+		 */
+		public int getValor() {
+			return op;
+		}
+
 	}
 
 	public Table(int tpal, int tbl, int tc) {
@@ -54,7 +81,7 @@ public class Table {
 	public PoliticaRemplazo getPoliticaRemplazo() {
 		return politicaRemplazo;
 	}
-	
+
 	public void setPoliticaReemplazo(PoliticaRemplazo pr) {
 		this.politicaRemplazo = pr;
 	}
@@ -110,7 +137,7 @@ public class Table {
 	public void setTiempoBuffer(int tiempoBuffer) {
 		this.tiempoBuffer = tiempoBuffer;
 	}
-	
+
 	/**
 	 * Establecer los ciclos necesarios para la transferencia del bloque
 	 *  
@@ -119,7 +146,7 @@ public class Table {
 	public void setTiempoBloque(int tiempoBloque) {
 		this.tiempoBloque = tiempoBloque;
 	}
-	
+
 	/**
 	 * Obtener los ciclos necesarios para la transferencia del bloque
 	 * 
@@ -128,15 +155,15 @@ public class Table {
 	public int getTiempoBloque() {
 		if (tiempoBloque < 0) {
 			// Tbl = Tmp + (tam.bloque - 1) * Tbuff
-			tiempoBloque = tiempoMemPrincipal + (tamBloq - 1) * tiempoBuffer; 
+			tiempoBloque = tiempoMemPrincipal + (getPalabrasDentroBloque() - 1) * tiempoBuffer; 
 		}
 		return tiempoBloque;
 	}
-	
+
 	public int[][] getMc() {
 		return mc;
 	}
-	
+
 	/**
 	 * Imprime por consola la informacion de la memoria cache y haciendo una separacion entre cada distinto conjunto de bloques
 	 * 
@@ -210,9 +237,18 @@ public class Table {
 	public int calculaPal(int dir) { //Se le pasa la dirección byte para obtener la palabra.
 		return dir/tamPal;
 	}
+	
+	/**
+	 * Calcula el numero de palabras que corresponden por bloque
+	 * 
+	 * @return numero de palabras por bloque
+	 */
+	public int getPalabrasDentroBloque() {
+		return tamBloq/tamPal;
+	}
 
 	public int calculaBloqPrin(int pal) {
-		return pal/(tamBloq/tamPal); //Nos dará el tamaño de bloques en palabras con lo que podremos descubrir el bloque de la MP.
+		return pal/(getPalabrasDentroBloque()); //Nos dará el tamaño de bloques en palabras con lo que podremos descubrir el bloque de la MP.
 	}
 
 	public int calculaConj(int bp, int numconj) {
@@ -233,49 +269,50 @@ public class Table {
 
 		System.out.println(">Direccion: " + dir + " - Palabra: " + pal + " - Bloque: " + bp);
 		System.out.println(">Conjunto: " + conj + " - Tag: " + tag);
-		
-		if(estado == true) {
+
+		if(acierto == true) {
 			System.out.println(">ACIERTO EN LA CACHE");
 		} else {
 			System.out.println(">FALLO EN LA CACHE");
 		}
 	}
 
-	public void imprimirEstado(int operacion, int dirty, int tambloqenpals) { 
-		/*El estado determinará fallo o acierto, operación si lectura 0 o escritura 1, dirty si sucio 1 o limpio 0 y tambloqenpals,
-		el tamaño de bloque en palabras.*/
+	//>Tiempo de acceso: busqueda cache, 2 -- transferir bloque (M>C o C>M), 21+7
+	//>T_acc: 30 ciclos
+	public void imprimirEstado(int bloqCache) {
+		
+		/*
+		 * if ( acierto) {
+		 * 		T = Tmc
+		 * } else if (bit dirty) {
+		 * 		T = Tmc + Tbl + Tbl
+		 * } else {
+		 * 		//fallo sin bit dirty
+		 * 		T = Tmc + Tbl
+		 * }
+		 * 
+		 */
+		
 		StringBuilder sb = new StringBuilder();
-		//>Tiempo de acceso: busqueda cache, 2 -- transferir bloque (M>C o C>M), 21+7
-		//>T_acc: 30 ciclos
-		sb.append(">Tiempo de acceso: busqueda cache, 2");
-		int tacc = 2;
 
-		if(!estado) {
-			if(operacion == 0) {
-				if(dirty == 0) {
-					sb.append("-- transferir bloque (M>C o C>M), 21+" + (tambloqenpals-1)*1);
-					tacc = 2+21+(tambloqenpals-1)*1;
-				} else if(dirty == 1) {
-					sb.append("-- transferir bloque (M>C o C>M) con reemplazo y dirty, 21+21" + (tambloqenpals-1)*1 + "+" + (tambloqenpals-1)*1);
-					tacc = 2+21+21+(tambloqenpals-1)*1+(tambloqenpals-1)*1;
-				}
-			} else if(operacion == 1) {
-				if(dirty == 0) {
-					sb.append("-- transferir bloque (M>C o C>M), 21+" + (tambloqenpals-1)*1);
-					tacc = 2+21+(tambloqenpals-1)*1;
-				} else if(dirty == 1) {
-					sb.append("-- transferir bloque (M>C o C>M) con reemplazo y dirty, 21+21" + (tambloqenpals-1)*1 + "+" + (tambloqenpals-1)*1);
-					tacc = 2+21+21+(tambloqenpals-1)*1+(tambloqenpals-1)*1;
-				}
+		if(acierto) {
+			sb.append("> Tiempo de acceso: busqueda cache, " + getTiempoMemCache());			
+		} else {
+			sb.append("-- transferir bloque (M>C o C>M)");
+			int tempVal = (getPalabrasDentroBloque() - 1) * tiempoBuffer;
+			if(!isDirty(bloqCache)) {
+				sb.append(", " + getTiempoMemPrincipal() + " + " + tempVal);
+			} else {
+				sb.append("con reemplazo y dirty, " + getTiempoMemPrincipal() + " + " + tempVal + " + " + getTiempoMemPrincipal() + " + " + tempVal);	
 			}
 		}
-
-		sb.append("/n");
-		sb.append(">T_acc: " + tacc + " ciclos");
+		sb.append("/n> T_acc: " + getCiclos(acierto, isDirty(bloqCache)) + " ciclos");
+		
+		System.out.println(sb.toString());
 	}
 
-	public void colocaBloq(int dir, int operacion) {
-		referencias++; //Se incrementa los intentos por cada dirección que se mete.
+	public void colocaBloq(int dir, TipoOperacion operacion) {
+		numReferencias++; //Se incrementa los intentos por cada dirección que se mete.
 		int bp = calculaBloqPrin(calculaPal(dir));
 		int cj = calculaConj(bp, 8/tamCache);
 
@@ -283,31 +320,34 @@ public class Table {
 			for(int i = 0; i < mc.length; i++) {
 				if(mc[i][4] == bp) {
 					
-					if(operacion == 1) { //Notifica que ha modificado.
+					/*
+					if(operacion == Operacion.ST) { //Notifica que ha modificado.
 						mc[cj][1] = 1;
 					}
-					
-					aciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
+					*/
+					mc[cj][1] = operacion.getValor();
 
-					estado = true; //El estado de la operación se cambia si hay acierto o fallo.
+					numAciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
+
+					acierto = true; //El estado de la operación se cambia si hay acierto o fallo.
 
 					if(politicaRemplazo == PoliticaRemplazo.LRU) { //Si se utiliza LRU.
 						lrufif[i] = 0;
 					} else {
 						lrufif[i]++;
 					}
-					
+
 					break;
 				} else {
 					if(i == 7) {
-						estado = false;
+						acierto = false;
 						int maxj = 0; //Indice del más mayor.
 						for(int j = 0; j < mc.length; j++) {
 							if(lrufif[maxj] < lrufif[j]) {
 								maxj = j;
 							}
 						}
-						
+
 						mc[maxj][0] = 1;
 						mc[maxj][1] = 0;
 						mc[maxj][2] = bp;
@@ -322,32 +362,35 @@ public class Table {
 			if(cj == 0) {
 				for(int i = 0; i < 4; i++) {
 					if(mc[i][4] == bp) {
-						
-						if(operacion == 1) { //Notifica que ha modificado.
+
+						/*
+						if(operacion == Operacion.ST) { //Notifica que ha modificado.
 							mc[cj][1] = 1;
 						}
-						
-						aciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
+						*/
+						mc[cj][1] = operacion.getValor();
 
-						estado = true; //El estado de la operación se cambia si hay acierto o fallo.
+						numAciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
+
+						acierto = true; //El estado de la operación se cambia si hay acierto o fallo.
 
 						if(politicaRemplazo == PoliticaRemplazo.LRU) { //Si se utiliza LRU.
 							lrufif[i] = 0;
 						} else {
 							lrufif[i]++;
 						}
-						
+
 						break;
 					} else {
 						if(i == 3) {
-							estado = false;
+							acierto = false;
 							int maxj = 0; //Indice del más mayor.
 							for(int j = 0; j < 4; j++) {
 								if(lrufif[maxj] < lrufif[j]) {
 									maxj = j;
 								}
 							}
-							
+
 							mc[maxj][0] = 1;
 							mc[maxj][1] = 0;
 							mc[maxj][2] = bp/2;
@@ -360,33 +403,36 @@ public class Table {
 			} else {
 				for(int i = 4; i < mc.length; i++) {
 					if(mc[i][4] == bp) {
-						
-						if(operacion == 1) { //Notifica que ha modificado.
+
+						/*
+						if(operacion == Operacion.ST) { //Notifica que ha modificado.
 							mc[cj][1] = 1;
 						}
-						
-						aciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
+						*/
+						mc[cj][1] = operacion.getValor();
 
-						estado = true; //El estado de la operación se cambia si hay acierto o fallo.
+						numAciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
+
+						acierto = true; //El estado de la operación se cambia si hay acierto o fallo.
 
 						if(politicaRemplazo == PoliticaRemplazo.LRU) { //Si se utiliza LRU.
 							lrufif[i] = 0;
 						} else {
 							lrufif[i]++;
 						}
-						
+
 						break;
 					} else {
 						if(i == 7) {
-							estado = false;
+							acierto = false;
 							int maxj = 0; //Indice del más mayor.
 							for(int j = 4; j < mc.length; j++) {
 								if(lrufif[maxj] < lrufif[j]) {
 									maxj = j;
 								}
 							}
-							
-							
+
+
 							mc[maxj][0] = 1;
 							mc[maxj][1] = 0;
 							mc[maxj][2] = bp/2;
@@ -408,34 +454,37 @@ public class Table {
 		} else if(8/tamCache == 4) {
 			if(cj == 0) {
 				for(int i = 0; i < 2; i++) {
-					
+
 					if(mc[i][4] == bp) {
-						
-						if(operacion == 1) { //Notifica que ha modificado.
+
+						/*
+						if(operacion == Operacion.ST) { //Notifica que ha modificado.
 							mc[cj][1] = 1;
 						}
-						
-						aciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
+						*/
+						mc[cj][1] = operacion.getValor();
 
-						estado = true; //El estado de la operación se cambia si hay acierto o fallo.
+						numAciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
+
+						acierto = true; //El estado de la operación se cambia si hay acierto o fallo.
 
 						if(politicaRemplazo == PoliticaRemplazo.LRU) { //Si se utiliza LRU.
 							lrufif[i] = 0;
 						} else {
 							lrufif[i]++;
 						}
-						
+
 						break;
 					} else {
 						if(i == 1) {
-							estado = false;
+							acierto = false;
 							int maxj = 0; //Indice del más mayor.
 							for(int j = 0; j < 2; j++) {
 								if(lrufif[maxj] < lrufif[j]) {
 									maxj = j;
 								}
 							}
-							
+
 							mc[maxj][0] = 1;
 							mc[maxj][1] = 0;
 							mc[maxj][2] = bp/4;
@@ -447,34 +496,37 @@ public class Table {
 				}
 			} else if(cj == 1) {
 				for(int i = 2; i < 4; i++) {
-					
+
 					if(mc[i][4] == bp) {
-						
-						if(operacion == 1) { //Notifica que ha modificado.
+
+						/*
+						if(operacion == Operacion.ST) { //Notifica que ha modificado.
 							mc[cj][1] = 1;
 						}
-						
-						aciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
+						*/
+						mc[cj][1] = operacion.getValor();
 
-						estado = true; //El estado de la operación se cambia si hay acierto o fallo.
+						numAciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
+
+						acierto = true; //El estado de la operación se cambia si hay acierto o fallo.
 
 						if(politicaRemplazo == PoliticaRemplazo.LRU) { //Si se utiliza LRU.
 							lrufif[i] = 0;
 						} else {
 							lrufif[i]++;
 						}
-						
+
 						break;
 					} else {
 						if(i == 3) {
-							estado = false;
+							acierto = false;
 							int maxj = 2; //Indice del más mayor.
 							for(int j = 2; j < 4; j++) {
 								if(lrufif[maxj] < lrufif[j]) {
 									maxj = j;
 								}
 							}
-							
+
 							mc[maxj][0] = 1;
 							mc[maxj][1] = 0;
 							mc[maxj][2] = bp/4;
@@ -486,34 +538,37 @@ public class Table {
 				}
 			} else if(cj == 2) {
 				for(int i = 4; i < 6; i++) {
-					
+
 					if(mc[i][4] == bp) {
-						
-						if(operacion == 1) { //Notifica que ha modificado.
+
+						/*
+						if(operacion == Operacion.ST) { //Notifica que ha modificado.
 							mc[cj][1] = 1;
 						}
-						
-						aciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
+						*/
+						mc[cj][1] = operacion.getValor();
 
-						estado = true; //El estado de la operación se cambia si hay acierto o fallo.
+						numAciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
+
+						acierto = true; //El estado de la operación se cambia si hay acierto o fallo.
 
 						if(politicaRemplazo == PoliticaRemplazo.LRU) { //Si se utiliza LRU.
 							lrufif[i] = 0;
 						} else {
 							lrufif[i]++;
 						}
-						
+
 						break;
 					} else {
 						if(i == 5) {
-							estado = false;
+							acierto = false;
 							int maxj = 4; //Indice del más mayor.
 							for(int j = 4; j < 6; j++) {
 								if(lrufif[maxj] < lrufif[j]) {
 									maxj = j;
 								}
 							}
-							
+
 							mc[maxj][0] = 1;
 							mc[maxj][1] = 0;
 							mc[maxj][2] = bp/4;
@@ -526,38 +581,41 @@ public class Table {
 			} else if(cj == 3) {
 				for(int i = 6; i < mc.length; i++) {
 					if(mc[i][4] == bp) {
-						
-						if(operacion == 1) { //Notifica que ha modificado.
+
+						/*
+						if(operacion == Operacion.ST) { //Notifica que ha modificado.
 							mc[cj][1] = 1;
 						}
-						
-						aciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
+						*/
+						mc[cj][1] = operacion.getValor();
 
-						estado = true; //El estado de la operación se cambia si hay acierto o fallo.
+						numAciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
+
+						acierto = true; //El estado de la operación se cambia si hay acierto o fallo.
 
 						if(politicaRemplazo == PoliticaRemplazo.LRU) { //Si se utiliza LRU.
 							lrufif[i] = 0;
 						} else {
 							lrufif[i]++;
 						}
-						
+
 						break;
 					} else {
 						if(i == 7) {
-							estado = false;
+							acierto = false;
 							int maxj = 6; //Indice del más mayor.
 							for(int j = 6; j < mc.length; j++) {
 								if(lrufif[maxj] < lrufif[j]) {
 									maxj = j;
 								}
 							}
-							
-							
+
+
 							mc[maxj][0] = 1;
 							mc[maxj][1] = 0;
 							mc[maxj][2] = bp/4;
 							mc[maxj][4] = bp; //Se traslada el bloque.
-							
+
 							lrufif[maxj] = 0;
 
 						}
@@ -566,15 +624,18 @@ public class Table {
 			}
 		} else if(8/tamCache == 8) {
 			if(mc[cj][4] == bp) {
-				
-				if(operacion == 1) {
+
+				/*
+				if(operacion == Operacion.ST) { //Notifica que ha modificado.
 					mc[cj][1] = 1;
 				}
-				
-				aciertos++;
-				estado = true;
+				*/
+				mc[cj][1] = operacion.getValor();
+
+				numAciertos++;
+				acierto = true;
 			} else {
-				estado = false;
+				acierto = false;
 				mc[cj][0] = 1;
 				mc[cj][1] = 0;
 				mc[cj][2] = bp/8;
@@ -585,7 +646,7 @@ public class Table {
 
 	public void calculaTiempoTot() {
 		float h = getTasaAcierto();
-		System.out.println("Referencias: " + referencias + " -- Aciertos: " + aciertos + " -- Tasa de aciertos, h = " + h);
+		System.out.println("Referencias: " + numReferencias + " -- Aciertos: " + numAciertos + " -- Tasa de aciertos, h = " + h);
 		System.out.println("Tiempo total = " + h*2+(1-h)*(2+(21+((tamBloq/tamPal)-1))*2)+(1-h)*(2+21+((tamBloq/tamPal)-1)));
 		System.exit(0);
 	}
@@ -604,56 +665,57 @@ public class Table {
 	//	 1 1 8 0 || b35
 	//	 0 0 0 0 || ---
 	//	 --------------------------------
-	
+
 	/**
 	 * Calcula el porcentaje de aciertos en el numero de referecias a la memoria cache que se han hecho
 	 * 
 	 * @return La tasa de acierto
 	 */
-	private float getTasaAcierto() {
-		if (referencias > 0) {
-			return (aciertos*100)/referencias;
+	public float getTasaAcierto() {
+		if (numReferencias > 0) {
+			return (numAciertos*100)/numReferencias;
 		}
 		return 0;
 	}
-	
+
 	/**
 	 * 
 	 * Calcular el numeros de ciclos de la operacion
 	 * 
 	 * @param acierto {@code true}, si el bloque esta en cache, {@code false}, si es al contrario
-	 * @param reemplazo {@code true}, si es necesario reemplazar el bloque, {@code false}, si es al contrario.
-	 * 					(Si {@code acierto} es {@code true}, el parametro {@code reemplazo} no afecta al resultado)
+	 * @param dirty {@code true}, si es necesario reemplazar el bloque, {@code false}, si es al contrario.
+	 * 					(Si {@code acierto} es {@code true}, el parametro {@code dirty} no afecta al resultado)
 	 * 
 	 * @return numeros de ciclos
 	 */
-	public int getCiclos(boolean acierto, boolean reemplazo) {
-		/*
-		 * if ( acierto) {
-		 * 		T = Tmc
-		 * } else if (bit tirty) {
-		 * 		T = Tmc + Tbl + Tbl
-		 * } else {
-		 * 		//fallo sin bit dirty
-		 * 		T = Tmc + Tbl
-		 * }
-		 * 
-		 */
+	public int getCiclos(boolean acierto, boolean dirty) {
 		
 		int ciclos = tiempoMemCache;
-		
+
 		if(!acierto) {
-			
+
 			ciclos += tiempoBloque;
-			
-			if(reemplazo) { 
+
+			if(dirty) { 
 				ciclos += tiempoBloque;
 			}
-			
+
 		} 
-		
+
 		return ciclos;
-		
+
+	}
+	
+	// TODO: Comprobar que este bien VVVVVVVVVVVV
+	/**
+	 * Comprobar si el bloque esta modificado o no
+	 * 
+	 * @return {@code true}, si esta modificado, {@code false}, si es al contrario
+	 */
+	public boolean isDirty(int dir) {
+		int bp = calculaBloqPrin(calculaPal(dir));
+		int cj = calculaConj(bp, 8/tamCache);
+		return mc[cj][1] == 1;
 	}
 
 }

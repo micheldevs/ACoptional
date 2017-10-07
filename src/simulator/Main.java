@@ -2,11 +2,14 @@ package simulator;
 
 import java.util.Scanner;
 
+import simulator.Table.TipoOperacion;
+
 public class Main {
 	
 	public static void main(String[] args) {
 
-		int tpal, tb, tc, pr, db = 0, op;
+		int tpal, tb, tc, pr, dirBloq = 0;
+		TipoOperacion op;
 		
 		System.out.println("Simulador de cache simple - Creado por: Ferran Tudela García y Miguel Ángel Blanco Fernández\n");
 		
@@ -72,25 +75,39 @@ public class Main {
 			
 			System.out.println("\n");
 			
-			Table tab = new Table(tpal, tb, tc);
+			Table table = new Table(tpal, tb, tc);
 			
 			//TODO: Comprobación de introducción correcta de la dirección
-			while(db != -1) {
+			while(dirBloq != -1) {
 				
 				System.out.println("\nEscriba dirección byte: (-1 para salir)\n>");
-				db = sc.nextInt();
+				dirBloq = sc.nextInt();
 				
 				System.out.println("Load (0) / Store (1)\n>");
-				op = sc.nextInt();
 				
-				tab.colocaBloq(db, op);
-				tab.imprimirResultado(db, 8/tc);
-				tab.imprimirEstado(op, 0, tb/tpal);
-				tab.imprimeTabla(tab.getMc(), tc);
+				switch (sc.nextInt()) {
+				case 0: // Load
+					op = TipoOperacion.LD;
+					break;
+
+				case 1: // Store
+					op = TipoOperacion.ST;
+					break;
+
+				default:
+					// TODO: Controlar numero ajeno a 0 y 1
+					op = null;
+					break;
+				}
+				
+				table.colocaBloq(dirBloq, op);
+				table.imprimirResultado(dirBloq, 8/tc);
+				table.imprimirEstado(dirBloq); // TODO: Comprobar que este bien
+				table.imprimeTabla(table.getMc(), tc);
 				
 			}
 			
-			tab.calculaTiempoTot();
+			table.calculaTiempoTot();
 		
 		}
 		
