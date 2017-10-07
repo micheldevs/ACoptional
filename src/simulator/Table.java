@@ -8,16 +8,22 @@ public class Table {
 	public final int MAX_TPAL = 8;
 	public final int MAX_TBL = 64;
 	public final int MAX_TC = 8;
+	
+	private int tiempoMemCache = 2; //Ciclos necesarios para el acceso a la memoria cache	
+	private int tiempoMemPrincipal = 21; //Ciclos necesarios para el acceso a la memoria principal
+	private int tiempoBuffer = 1; // Ciclos necesarios para el buffer
+	private int tiempoBloque = -1; // Ciclos necesarios para transferir el bloque 
 
 	private int[][] mc;
 	private int[] lrufif = {0, 0, 0, 0, 0, 0, 0, 0};
+	private LinkedList<Integer> fifo = new LinkedList<Integer>();
 	private boolean estado = false;
-	private int tpal;
-	private int tbl;
-	private int tc;
+	private int tamPal;
+	private int tamBloq;
+	private int tamCache;
 
-	public int aciertos = 0;
-	public int intentos = 0;
+	private int aciertos;
+	private int referencias;
 
 	private PoliticaRemplazo politicaRemplazo;
 
@@ -29,9 +35,9 @@ public class Table {
 	}
 
 	public Table(int tpal, int tbl, int tc) {
-		this.tpal = tpal;
-		this.tbl = tbl;
-		this.tc = tc;
+		this.tamPal = tpal;
+		this.tamBloq = tbl;
+		this.tamCache = tc;
 
 		this.mc = new int[MAX_TC][5];
 
@@ -48,9 +54,83 @@ public class Table {
 	public PoliticaRemplazo getPoliticaRemplazo() {
 		return politicaRemplazo;
 	}
-
+	
 	public void setPoliticaReemplazo(PoliticaRemplazo pr) {
 		this.politicaRemplazo = pr;
+	}
+
+	/**
+	 * Obtener los ciclos necesarios para acceder a la memoria cache
+	 * 
+	 * @return los ciclos que se tardan
+	 */
+	public int getTiempoMemCache() {
+		return tiempoMemCache;
+	}
+
+	/**
+	 * Establecer los ciclos necesarios para acceder a la memoria cache
+	 *  
+	 * @param tiempoMemCache ciclos que se tardan
+	 */
+	public void setTiempoMemCache(int tiempoMemCache) {
+		this.tiempoMemCache = tiempoMemCache;
+	}
+
+	/**
+	 * Obtener los ciclos necesarios para acceder a la memoria principal
+	 * 
+	 * @return los ciclos que se tardan
+	 */
+	public int getTiempoMemPrincipal() {
+		return tiempoMemPrincipal;
+	}
+
+	/**
+	 * Establecer los ciclos necesarios para acceder a la memoria principal
+	 *  
+	 * @param tiempoMemPrincipal ciclos que se tardan
+	 */
+	public void setTiempoMemPrincipal(int tiempoMemPrincipal) {
+		this.tiempoMemPrincipal = tiempoMemPrincipal;
+	}
+
+	/**
+	 * Obtener los ciclos necesarios para el buffer
+	 * 
+	 * @return los ciclos que se tardan
+	 */
+	public int getTiempoBuffer() {
+		return tiempoBuffer;
+	}
+
+	/**
+	 * @param tiempoBuffer the tiempoBuffer to set
+	 */
+	public void setTiempoBuffer(int tiempoBuffer) {
+		this.tiempoBuffer = tiempoBuffer;
+	}
+	
+	/**
+	 * Establecer los ciclos necesarios para la transferencia del bloque
+	 *  
+	 * @param tiempoBuffer ciclos que se tardan
+	 */
+	public void setTiempoBloque(int tiempoBloque) {
+		this.tiempoBloque = tiempoBloque;
+	}
+	
+	/**
+	 * Obtener los ciclos necesarios para la transferencia del bloque
+	 * 
+	 * @return los ciclos que se tardan
+	 */
+	public int getTiempoBloque() {
+		if (tiempoBloque < 0) {
+			// Tbl = Tmp + (tam.bloque - 1) * Tbuff
+			tiempoBloque = tiempoMemPrincipal + (tamBloq - 1) * tiempoBuffer; 
+		}
+		return tiempoBloque;
 	}
 	
 	public int[][] getMc() {
@@ -104,35 +184,35 @@ public class Table {
 	}
 
 	public int getTamPal() {
-		return tpal;
+		return tamPal;
 	}
 
 	public void setTamPal(int tamPal) {
-		this.tpal = tamPal;
+		this.tamPal = tamPal;
 	}
 
 	public int getTamBloq() {
-		return tbl;
+		return tamBloq;
 	}
 
 	public void setTamBloq(int tamBloq) {
-		this.tbl = tamBloq;
+		this.tamBloq = tamBloq;
 	}
 
 	public int getTamCache() {
-		return tc;
+		return tamCache;
 	}
 
 	public void setTamCache(int tamCache) {
-		this.tc = tamCache;
+		this.tamCache = tamCache;
 	}
 
 	public int calculaPal(int dir) { //Se le pasa la dirección byte para obtener la palabra.
-		return dir/tpal;
+		return dir/tamPal;
 	}
 
 	public int calculaBloqPrin(int pal) {
-		return pal/(tbl/tpal); //Nos dará el tamaño de bloques en palabras con lo que podremos descubrir el bloque de la MP.
+		return pal/(tamBloq/tamPal); //Nos dará el tamaño de bloques en palabras con lo que podremos descubrir el bloque de la MP.
 	}
 
 	public int calculaConj(int bp, int numconj) {
@@ -195,11 +275,11 @@ public class Table {
 	}
 
 	public void colocaBloq(int dir, int operacion) {
-		intentos++; //Se incrementa los intentos por cada dirección que se mete.
+		referencias++; //Se incrementa los intentos por cada dirección que se mete.
 		int bp = calculaBloqPrin(calculaPal(dir));
-		int cj = calculaConj(bp, 8/tc);
+		int cj = calculaConj(bp, 8/tamCache);
 
-		if(8/tc == 1) {
+		if(8/tamCache == 1) {
 			for(int i = 0; i < mc.length; i++) {
 				if(mc[i][4] == bp) {
 					
@@ -237,7 +317,7 @@ public class Table {
 					}
 				}
 			}
-		} else if(8/tc == 2) {
+		} else if(8/tamCache == 2) {
 
 			if(cj == 0) {
 				for(int i = 0; i < 4; i++) {
@@ -325,7 +405,7 @@ public class Table {
 			//
 			//				}
 
-		} else if(8/tc == 4) {
+		} else if(8/tamCache == 4) {
 			if(cj == 0) {
 				for(int i = 0; i < 2; i++) {
 					
@@ -484,7 +564,7 @@ public class Table {
 					}
 				}
 			}
-		} else if(8/tc == 8) {
+		} else if(8/tamCache == 8) {
 			if(mc[cj][4] == bp) {
 				
 				if(operacion == 1) {
@@ -504,9 +584,9 @@ public class Table {
 	}
 
 	public void calculaTiempoTot() {
-		float h = (float) aciertos/intentos;
-		System.out.println("Referencias: " + intentos + " -- Aciertos: " + aciertos + " -- Tasa de aciertos, h = " + h);
-		System.out.println("Tiempo total = " + h*2+(1-h)*(2+(21+((tbl/tpal)-1))*2)+(1-h)*(2+21+((tbl/tpal)-1)));
+		float h = getTasaAcierto();
+		System.out.println("Referencias: " + referencias + " -- Aciertos: " + aciertos + " -- Tasa de aciertos, h = " + h);
+		System.out.println("Tiempo total = " + h*2+(1-h)*(2+(21+((tamBloq/tamPal)-1))*2)+(1-h)*(2+21+((tamBloq/tamPal)-1)));
 		System.exit(0);
 	}
 
@@ -524,5 +604,56 @@ public class Table {
 	//	 1 1 8 0 || b35
 	//	 0 0 0 0 || ---
 	//	 --------------------------------
+	
+	/**
+	 * Calcula el porcentaje de aciertos en el numero de referecias a la memoria cache que se han hecho
+	 * 
+	 * @return La tasa de acierto
+	 */
+	private float getTasaAcierto() {
+		if (referencias > 0) {
+			return (aciertos*100)/referencias;
+		}
+		return 0;
+	}
+	
+	/**
+	 * 
+	 * Calcular el numeros de ciclos de la operacion
+	 * 
+	 * @param acierto {@code true}, si el bloque esta en cache, {@code false}, si es al contrario
+	 * @param reemplazo {@code true}, si es necesario reemplazar el bloque, {@code false}, si es al contrario.
+	 * 					(Si {@code acierto} es {@code true}, el parametro {@code reemplazo} no afecta al resultado)
+	 * 
+	 * @return numeros de ciclos
+	 */
+	public int getCiclos(boolean acierto, boolean reemplazo) {
+		/*
+		 * if ( acierto) {
+		 * 		T = Tmc
+		 * } else if (bit tirty) {
+		 * 		T = Tmc + Tbl + Tbl
+		 * } else {
+		 * 		//fallo sin bit dirty
+		 * 		T = Tmc + Tbl
+		 * }
+		 * 
+		 */
+		
+		int ciclos = tiempoMemCache;
+		
+		if(!acierto) {
+			
+			ciclos += tiempoBloque;
+			
+			if(reemplazo) { 
+				ciclos += tiempoBloque;
+			}
+			
+		} 
+		
+		return ciclos;
+		
+	}
 
 }
