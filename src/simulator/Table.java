@@ -12,14 +12,14 @@ public class Table {
 	private int tiempoMemPrincipal = 21; //Ciclos necesarios para el acceso a la memoria principal
 	private int tiempoBuffer = 1; // Ciclos necesarios para el buffer
 	private int tiempoBloque = -1; // Ciclos necesarios para transferir el bloque
-	
+
 	private int totalCiclos = 0;
 
 	private int[][] mc;
 	private int[] lrufif = {0, 0, 0, 0, 0, 0, 0, 0};
-	
+
 	private LinkedList<Integer> listaBloques = new LinkedList<Integer>();
-	
+
 	private int tamPal;
 	private int tamBloq;
 	private int tamCache;
@@ -47,11 +47,11 @@ public class Table {
 		ST(1);	
 
 		private final int op;
-	
+
 		private TipoOperacion(int op) {
 			this.op = op;
 		}
-	
+
 		/**
 		 * Optener el valor del {@code enum}
 		 * 
@@ -239,7 +239,7 @@ public class Table {
 	public int calculaPal(int dir) { //Se le pasa la dirección byte para obtener la palabra.
 		return dir/tamPal;
 	}
-	
+
 	/**
 	 * Calcula el numero de palabras que corresponden por bloque
 	 * 
@@ -262,7 +262,7 @@ public class Table {
 	}
 
 	public void imprimirResultado(int dir, int numconj) {
-		
+
 		int bp = 0, pal = 0, tag = 0, conj = 0;
 
 		pal = calculaPal(dir);
@@ -278,13 +278,13 @@ public class Table {
 		} else {
 			System.out.println("> FALLO EN LA CACHE");
 		}
-		
+
 	}
 
 	//>Tiempo de acceso: busqueda cache, 2 -- transferir bloque (M>C o C>M), 21+7
 	//>T_acc: 30 ciclos
 	public void imprimirEstado(int bloqCache) {
-		
+
 		/*
 		 * if ( acierto) {
 		 * 		T = Tmc
@@ -296,7 +296,7 @@ public class Table {
 		 * }
 		 * 
 		 */
-		
+
 		StringBuilder sb = new StringBuilder();
 
 		if(acierto) {
@@ -311,7 +311,7 @@ public class Table {
 			}
 		}
 		sb.append("\n> T_acc: " + getCiclos(acierto, isDirty(bloqCache)) + " ciclos");
-		
+
 		System.out.println(sb.toString());
 	}
 
@@ -323,13 +323,11 @@ public class Table {
 		if(8/tamCache == 1) {
 			for(int i = 0; i < mc.length; i++) {
 				if(mc[i][4] == bp) {
-					
-					/*
-					if(operacion == Operacion.ST) { //Notifica que ha modificado.
-						mc[cj][1] = 1;
+
+
+					if(operacion == operacion.ST) { //Notifica que ha modificado.
+						mc[i][1] = 1;
 					}
-					*/
-					mc[cj][1] = operacion.getValor();
 
 					numAciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
 
@@ -345,10 +343,13 @@ public class Table {
 				} else {
 					if(i == 7) {
 						acierto = false;
+
 						int maxj = 0; //Indice del más mayor.
 						for(int j = 0; j < mc.length; j++) {
 							if(lrufif[maxj] < lrufif[j]) {
 								maxj = j;
+							} else if(mc[maxj][0] == 0) {
+								break;
 							}
 						}
 
@@ -367,12 +368,9 @@ public class Table {
 				for(int i = 0; i < 4; i++) {
 					if(mc[i][4] == bp) {
 
-						/*
-						if(operacion == Operacion.ST) { //Notifica que ha modificado.
-							mc[cj][1] = 1;
+						if(operacion == operacion.ST) { //Notifica que ha modificado.
+							mc[i][1] = 1;
 						}
-						*/
-						mc[cj][1] = operacion.getValor();
 
 						numAciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
 
@@ -403,17 +401,17 @@ public class Table {
 
 						}
 					}
+
+					lrufif[i]++;
 				}
 			} else {
 				for(int i = 4; i < mc.length; i++) {
 					if(mc[i][4] == bp) {
 
-						/*
-						if(operacion == Operacion.ST) { //Notifica que ha modificado.
-							mc[cj][1] = 1;
+						if(operacion == operacion.ST) { //Notifica que ha modificado.
+							mc[i][1] = 1;
 						}
-						*/
-						mc[cj][1] = operacion.getValor();
+
 
 						numAciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
 
@@ -433,6 +431,8 @@ public class Table {
 							for(int j = 4; j < mc.length; j++) {
 								if(lrufif[maxj] < lrufif[j]) {
 									maxj = j;
+								} else if(mc[maxj][0] == 0) {
+									break;
 								}
 							}
 
@@ -445,6 +445,8 @@ public class Table {
 
 						}
 					}
+
+					lrufif[i]++;
 				}
 			}
 
@@ -461,12 +463,9 @@ public class Table {
 
 					if(mc[i][4] == bp) {
 
-						/*
-						if(operacion == Operacion.ST) { //Notifica que ha modificado.
-							mc[cj][1] = 1;
+						if(operacion == operacion.ST) { //Notifica que ha modificado.
+							mc[i][1] = 1;
 						}
-						*/
-						mc[cj][1] = operacion.getValor();
 
 						numAciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
 
@@ -486,6 +485,8 @@ public class Table {
 							for(int j = 0; j < 2; j++) {
 								if(lrufif[maxj] < lrufif[j]) {
 									maxj = j;
+								} else if(mc[maxj][0] == 0) {
+									break;
 								}
 							}
 
@@ -497,18 +498,16 @@ public class Table {
 
 						}
 					}
+					lrufif[i]++;
 				}
 			} else if(cj == 1) {
 				for(int i = 2; i < 4; i++) {
 
 					if(mc[i][4] == bp) {
 
-						/*
-						if(operacion == Operacion.ST) { //Notifica que ha modificado.
-							mc[cj][1] = 1;
+						if(operacion == operacion.ST) { //Notifica que ha modificado.
+							mc[i][1] = 1;
 						}
-						*/
-						mc[cj][1] = operacion.getValor();
 
 						numAciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
 
@@ -528,6 +527,8 @@ public class Table {
 							for(int j = 2; j < 4; j++) {
 								if(lrufif[maxj] < lrufif[j]) {
 									maxj = j;
+								} else if(mc[maxj][0] == 0) {
+									break;
 								}
 							}
 
@@ -539,18 +540,16 @@ public class Table {
 
 						}
 					}
+					lrufif[i]++;
 				}
 			} else if(cj == 2) {
 				for(int i = 4; i < 6; i++) {
 
 					if(mc[i][4] == bp) {
 
-						/*
-						if(operacion == Operacion.ST) { //Notifica que ha modificado.
-							mc[cj][1] = 1;
+						if(operacion == operacion.ST) { //Notifica que ha modificado.
+							mc[i][1] = 1;
 						}
-						*/
-						mc[cj][1] = operacion.getValor();
 
 						numAciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
 
@@ -566,10 +565,13 @@ public class Table {
 					} else {
 						if(i == 5) {
 							acierto = false;
+
 							int maxj = 4; //Indice del más mayor.
 							for(int j = 4; j < 6; j++) {
 								if(lrufif[maxj] < lrufif[j]) {
 									maxj = j;
+								} else if(mc[maxj][0] == 0) {
+									break;
 								}
 							}
 
@@ -581,17 +583,15 @@ public class Table {
 
 						}
 					}
+					lrufif[i]++;
 				}
 			} else if(cj == 3) {
 				for(int i = 6; i < mc.length; i++) {
 					if(mc[i][4] == bp) {
 
-						/*
-						if(operacion == Operacion.ST) { //Notifica que ha modificado.
-							mc[cj][1] = 1;
+						if(operacion == operacion.ST) { //Notifica que ha modificado.
+							mc[i][1] = 1;
 						}
-						*/
-						mc[cj][1] = operacion.getValor();
 
 						numAciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
 
@@ -611,39 +611,39 @@ public class Table {
 							for(int j = 6; j < mc.length; j++) {
 								if(lrufif[maxj] < lrufif[j]) {
 									maxj = j;
+								} else if(mc[maxj][0] == 0) {
+									break;
 								}
+
+
+								mc[maxj][0] = 1;
+								mc[maxj][1] = 0;
+								mc[maxj][2] = bp/4;
+								mc[maxj][4] = bp; //Se traslada el bloque.
+
+								lrufif[maxj] = 0;
+
 							}
-
-
-							mc[maxj][0] = 1;
-							mc[maxj][1] = 0;
-							mc[maxj][2] = bp/4;
-							mc[maxj][4] = bp; //Se traslada el bloque.
-
-							lrufif[maxj] = 0;
-
 						}
 					}
+					lrufif[i]++;
 				}
-			}
-		} else if(8/tamCache == 8) {
-			if(mc[cj][4] == bp) {
+			} else if(8/tamCache == 8) {
+				if(mc[cj][4] == bp) {
 
-				/*
-				if(operacion == Operacion.ST) { //Notifica que ha modificado.
-					mc[cj][1] = 1;
+					if(operacion == operacion.ST) { //Notifica que ha modificado.
+						mc[cj][1] = 1;
+					}
+
+					numAciertos++;
+					acierto = true;
+				} else {
+					acierto = false;
+					mc[cj][0] = 1;
+					mc[cj][1] = 0;
+					mc[cj][2] = bp/8;
+					mc[cj][4] = bp;
 				}
-				*/
-				mc[cj][1] = operacion.getValor();
-
-				numAciertos++;
-				acierto = true;
-			} else {
-				acierto = false;
-				mc[cj][0] = 1;
-				mc[cj][1] = 0;
-				mc[cj][2] = bp/8;
-				mc[cj][4] = bp;
 			}
 		}
 	}
@@ -691,7 +691,7 @@ public class Table {
 	 * @return numeros de ciclos
 	 */
 	public int getCiclos(boolean acierto, boolean dirty) {
-		
+
 		int ciclos = tiempoMemCache;
 
 		if(!acierto) {
@@ -703,10 +703,10 @@ public class Table {
 			}
 
 		} 
-		
+
 		return ciclos;
 	}
-	
+
 	/**
 	 * Obtener los ciclos que ha tardado en total
 	 * 
@@ -715,7 +715,7 @@ public class Table {
 	public int getTotalCiclos() {
 		return totalCiclos;
 	}
-	
+
 	/**
 	 * Poner los ciclos que ha tardado en total
 	 * 
@@ -724,7 +724,7 @@ public class Table {
 	public void setTotalCiclos(int totalCiclos) {
 		this.totalCiclos = totalCiclos;
 	}
-	
+
 	// TODO: Comprobar que este bien VVVVVVVVVVVV
 	/**
 	 * Comprobar si el bloque esta modificado o no
