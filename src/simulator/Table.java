@@ -25,6 +25,8 @@ public class Table {
 	private int tamCache;
 
 	private boolean acierto = false;
+	private boolean dirty = false;
+	
 	private int numAciertos;
 	private int numReferencias;
 
@@ -310,7 +312,7 @@ public class Table {
 				sb.append("con reemplazo y dirty, " + getTiempoMemPrincipal() + " + " + tempVal + " + " + getTiempoMemPrincipal() + " + " + tempVal);	
 			}
 		}
-		sb.append("\n> T_acc: " + getCiclos(acierto, isDirty(bloqCache)) + " ciclos");
+		sb.append("\n> T_acc: " + getCiclos(acierto, dirty) + " ciclos");
 
 		System.out.println(sb.toString());
 	}
@@ -319,13 +321,15 @@ public class Table {
 		numReferencias++; //Se incrementa los intentos por cada dirección que se mete.
 		int bp = calculaBloqPrin(calculaPal(dir));
 		int cj = calculaConj(bp, 8/tamCache);
+		
+		dirty = mc[cj][1] == 1;
 
 		if(8/tamCache == 1) {
 			for(int i = 0; i < mc.length; i++) {
 				if(mc[i][4] == bp) {
 
 
-					if(operacion == operacion.ST) { //Notifica que ha modificado.
+					if(operacion == TipoOperacion.ST) { //Notifica que ha modificado.
 						mc[i][1] = 1;
 					}
 
@@ -369,7 +373,7 @@ public class Table {
 				for(int i = 0; i < 4; i++) {
 					if(mc[i][4] == bp) {
 
-						if(operacion == operacion.ST) { //Notifica que ha modificado.
+						if(operacion == TipoOperacion.ST) { //Notifica que ha modificado.
 							mc[i][1] = 1;
 						}
 
@@ -412,7 +416,7 @@ public class Table {
 				for(int i = 4; i < mc.length; i++) {
 					if(mc[i][4] == bp) {
 
-						if(operacion == operacion.ST) { //Notifica que ha modificado.
+						if(operacion == TipoOperacion.ST) { //Notifica que ha modificado.
 							mc[i][1] = 1;
 						}
 
@@ -468,7 +472,7 @@ public class Table {
 
 					if(mc[i][4] == bp) {
 
-						if(operacion == operacion.ST) { //Notifica que ha modificado.
+						if(operacion == TipoOperacion.ST) { //Notifica que ha modificado.
 							mc[i][1] = 1;
 						}
 
@@ -511,7 +515,7 @@ public class Table {
 
 					if(mc[i][4] == bp) {
 
-						if(operacion == operacion.ST) { //Notifica que ha modificado.
+						if(operacion == TipoOperacion.ST) { //Notifica que ha modificado.
 							mc[i][1] = 1;
 						}
 
@@ -554,7 +558,7 @@ public class Table {
 
 					if(mc[i][4] == bp) {
 
-						if(operacion == operacion.ST) { //Notifica que ha modificado.
+						if(operacion == TipoOperacion.ST) { //Notifica que ha modificado.
 							mc[i][1] = 1;
 						}
 
@@ -597,7 +601,7 @@ public class Table {
 				for(int i = 6; i < mc.length; i++) {
 					if(mc[i][4] == bp) {
 
-						if(operacion == operacion.ST) { //Notifica que ha modificado.
+						if(operacion == TipoOperacion.ST) { //Notifica que ha modificado.
 							mc[i][1] = 1;
 						}
 
@@ -637,7 +641,7 @@ public class Table {
 			} else if(8/tamCache == 8) {
 				if(mc[cj][4] == bp) {
 
-					if(operacion == operacion.ST) { //Notifica que ha modificado.
+					if(operacion == TipoOperacion.ST) { //Notifica que ha modificado.
 						mc[cj][1] = 1;
 					}
 
@@ -652,6 +656,9 @@ public class Table {
 				}
 			}
 		}
+		
+		totalCiclos += getCiclos(acierto, dirty);
+		
 	}
 
 	public void calculaTiempoTot() {
@@ -698,14 +705,14 @@ public class Table {
 	 */
 	public int getCiclos(boolean acierto, boolean dirty) {
 
-		int ciclos = tiempoMemCache;
+		int ciclos = getTiempoMemCache();
 
 		if(!acierto) {
 
-			ciclos += tiempoBloque;
+			ciclos += getTiempoBloque();
 
 			if(dirty) { 
-				ciclos += tiempoBloque;
+				ciclos += getTiempoBloque();
 			}
 
 		} 
@@ -731,7 +738,6 @@ public class Table {
 		this.totalCiclos = totalCiclos;
 	}
 
-	// TODO: Comprobar que este bien VVVVVVVVVVVV
 	/**
 	 * Comprobar si el bloque esta modificado o no
 	 * 
