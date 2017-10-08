@@ -18,8 +18,6 @@ public class Table {
 	private int[][] mc;
 	private int[] lrufif = {0, 0, 0, 0, 0, 0, 0, 0};
 
-	private LinkedList<Integer> listaBloques = new LinkedList<Integer>();
-
 	private int tamPal;
 	private int tamBloq;
 	private int tamCache;
