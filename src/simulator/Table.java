@@ -288,7 +288,7 @@ public class Table {
 	public void imprimirEstado(int bloqCache) {
 
 		/*
-		 * if ( acierto) {
+		 * if (acierto) {
 		 * 		T = Tmc
 		 * } else if (bit dirty) {
 		 * 		T = Tmc + Tbl + Tbl
@@ -301,10 +301,10 @@ public class Table {
 
 		StringBuilder sb = new StringBuilder();
 
-		if(acierto) {
-			sb.append("> Tiempo de acceso: busqueda cache, " + getTiempoMemCache());			
-		} else {
-			sb.append("-- transferir bloque (M>C o C>M)");
+		sb.append("> Tiempo de acceso: busqueda cache, " + getTiempoMemCache());
+						
+		if(!acierto) {
+			sb.append(" -- transferir bloque (M>C o C>M)");
 			int tempVal = (getPalabrasDentroBloque() - 1) * tiempoBuffer;
 			if(!isDirty(bloqCache)) {
 				sb.append(", " + getTiempoMemPrincipal() + " + " + tempVal);
@@ -312,6 +312,7 @@ public class Table {
 				sb.append("con reemplazo y dirty, " + getTiempoMemPrincipal() + " + " + tempVal + " + " + getTiempoMemPrincipal() + " + " + tempVal);	
 			}
 		}
+		
 		sb.append("\n> T_acc: " + getCiclos(acierto, dirty) + " ciclos");
 
 		System.out.println(sb.toString());
