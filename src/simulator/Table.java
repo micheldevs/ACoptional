@@ -1,7 +1,5 @@
 package simulator;
 
-import java.util.LinkedList;
-
 public class Table {
 
 	public final int MAX_TPAL = 8;
