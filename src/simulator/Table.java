@@ -328,6 +328,7 @@ public class Table {
 
 					if(operacion == TipoOperacion.ST) { //Notifica que ha modificado.
 						mc[i][1] = 1;
+						mc[i][3] = 1;
 					}
 
 					numAciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
@@ -357,6 +358,7 @@ public class Table {
 
 						mc[maxj][0] = 1;
 						mc[maxj][1] = 0;
+						mc[maxj][3] = 0;
 						mc[maxj][2] = bp;
 						mc[maxj][4] = bp; //Se traslada el bloque.
 						lrufif[maxj] = 0;
@@ -372,6 +374,7 @@ public class Table {
 
 						if(operacion == TipoOperacion.ST) { //Notifica que ha modificado.
 							mc[i][1] = 1;
+							mc[i][3] = 1;
 						}
 
 						numAciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
@@ -401,6 +404,7 @@ public class Table {
 							mc[maxj][0] = 1;
 							mc[maxj][1] = 0;
 							mc[maxj][2] = bp/2;
+							mc[maxj][3] = 0;
 							mc[maxj][4] = bp; //Se traslada el bloque.
 							lrufif[maxj] = 0;
 
@@ -415,6 +419,7 @@ public class Table {
 
 						if(operacion == TipoOperacion.ST) { //Notifica que ha modificado.
 							mc[i][1] = 1;
+							mc[i][3] = 1;
 						}
 
 
@@ -446,6 +451,7 @@ public class Table {
 							mc[maxj][0] = 1;
 							mc[maxj][1] = 0;
 							mc[maxj][2] = bp/2;
+							mc[maxj][3] = 0;
 							mc[maxj][4] = bp; //Se traslada el bloque.
 							lrufif[maxj] = 0;
 
@@ -471,6 +477,7 @@ public class Table {
 
 						if(operacion == TipoOperacion.ST) { //Notifica que ha modificado.
 							mc[i][1] = 1;
+							mc[i][3] = 1;
 						}
 
 						numAciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
@@ -500,6 +507,7 @@ public class Table {
 							mc[maxj][0] = 1;
 							mc[maxj][1] = 0;
 							mc[maxj][2] = bp/4;
+							mc[maxj][3] = 0;
 							mc[maxj][4] = bp; //Se traslada el bloque.
 							lrufif[maxj] = 0;
 
@@ -514,6 +522,7 @@ public class Table {
 
 						if(operacion == TipoOperacion.ST) { //Notifica que ha modificado.
 							mc[i][1] = 1;
+							mc[i][3] = 1;
 						}
 
 						numAciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
@@ -543,6 +552,7 @@ public class Table {
 							mc[maxj][0] = 1;
 							mc[maxj][1] = 0;
 							mc[maxj][2] = bp/4;
+							mc[maxj][3] = 0;
 							mc[maxj][4] = bp; //Se traslada el bloque.
 							lrufif[maxj] = 0;
 
@@ -557,6 +567,7 @@ public class Table {
 
 						if(operacion == TipoOperacion.ST) { //Notifica que ha modificado.
 							mc[i][1] = 1;
+							mc[i][3] = 1;
 						}
 
 						numAciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
@@ -587,6 +598,7 @@ public class Table {
 							mc[maxj][0] = 1;
 							mc[maxj][1] = 0;
 							mc[maxj][2] = bp/4;
+							mc[maxj][3] = 0;
 							mc[maxj][4] = bp; //Se traslada el bloque.
 							lrufif[maxj] = 0;
 
@@ -600,6 +612,7 @@ public class Table {
 
 						if(operacion == TipoOperacion.ST) { //Notifica que ha modificado.
 							mc[i][1] = 1;
+							mc[i][3] = 1;
 						}
 
 						numAciertos++; //Se incrementan los aciertos para la tasa de aciertos por cada dirección.
@@ -629,6 +642,7 @@ public class Table {
 								mc[maxj][0] = 1;
 								mc[maxj][1] = 0;
 								mc[maxj][2] = bp/4;
+								mc[maxj][3] = 0;
 								mc[maxj][4] = bp; //Se traslada el bloque.
 								lrufif[maxj] = 0;
 						}
@@ -640,6 +654,7 @@ public class Table {
 
 					if(operacion == TipoOperacion.ST) { //Notifica que ha modificado.
 						mc[cj][1] = 1;
+						mc[cj][3] = 1;
 					}
 
 					numAciertos++;
@@ -649,6 +664,7 @@ public class Table {
 					mc[cj][0] = 1;
 					mc[cj][1] = 0;
 					mc[cj][2] = bp/8;
+					mc[cj][3] = 0;
 					mc[cj][4] = bp;
 				}
 			}
