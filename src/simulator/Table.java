@@ -346,10 +346,11 @@ public class Table {
 
 						int maxj = 0; //Indice del más mayor.
 						for(int j = 0; j < mc.length; j++) {
-							if(lrufif[maxj] < lrufif[j]) {
+							if(mc[j][0] == 0) {
 								maxj = j;
-							} else if(mc[maxj][0] == 0) {
 								break;
+							} else if(lrufif[maxj] < lrufif[j]) {
+								maxj = j;
 							}
 						}
 
@@ -388,7 +389,10 @@ public class Table {
 							acierto = false;
 							int maxj = 0; //Indice del más mayor.
 							for(int j = 0; j < 4; j++) {
-								if(lrufif[maxj] < lrufif[j]) {
+								if(mc[j][0] == 0) {
+									maxj = j;
+									break;
+								} else if(lrufif[maxj] < lrufif[j]) {
 									maxj = j;
 								}
 							}
@@ -429,10 +433,11 @@ public class Table {
 							acierto = false;
 							int maxj = 0; //Indice del más mayor.
 							for(int j = 4; j < mc.length; j++) {
-								if(lrufif[maxj] < lrufif[j]) {
+								if(mc[j][0] == 0) {
 									maxj = j;
-								} else if(mc[maxj][0] == 0) {
 									break;
+								} else if(lrufif[maxj] < lrufif[j]) {
+									maxj = j;
 								}
 							}
 
@@ -483,10 +488,11 @@ public class Table {
 							acierto = false;
 							int maxj = 0; //Indice del más mayor.
 							for(int j = 0; j < 2; j++) {
-								if(lrufif[maxj] < lrufif[j]) {
+								if(mc[j][0] == 0) {
 									maxj = j;
-								} else if(mc[maxj][0] == 0) {
 									break;
+								} else if(lrufif[maxj] < lrufif[j]) {
+									maxj = j;
 								}
 							}
 
@@ -525,10 +531,11 @@ public class Table {
 							acierto = false;
 							int maxj = 2; //Indice del más mayor.
 							for(int j = 2; j < 4; j++) {
-								if(lrufif[maxj] < lrufif[j]) {
+								if(mc[j][0] == 0) {
 									maxj = j;
-								} else if(mc[maxj][0] == 0) {
 									break;
+								} else if(lrufif[maxj] < lrufif[j]) {
+									maxj = j;
 								}
 							}
 
@@ -568,10 +575,11 @@ public class Table {
 
 							int maxj = 4; //Indice del más mayor.
 							for(int j = 4; j < 6; j++) {
-								if(lrufif[maxj] < lrufif[j]) {
+								if(mc[j][0] == 0) {
 									maxj = j;
-								} else if(mc[maxj][0] == 0) {
 									break;
+								} else if(lrufif[maxj] < lrufif[j]) {
+									maxj = j;
 								}
 							}
 
@@ -609,21 +617,19 @@ public class Table {
 							acierto = false;
 							int maxj = 6; //Indice del más mayor.
 							for(int j = 6; j < mc.length; j++) {
-								if(lrufif[maxj] < lrufif[j]) {
+								if(mc[j][0] == 0) {
 									maxj = j;
-								} else if(mc[maxj][0] == 0) {
 									break;
+								} else if(lrufif[maxj] < lrufif[j]) {
+									maxj = j;
 								}
-
-
+							}
+								
 								mc[maxj][0] = 1;
 								mc[maxj][1] = 0;
 								mc[maxj][2] = bp/4;
 								mc[maxj][4] = bp; //Se traslada el bloque.
-
 								lrufif[maxj] = 0;
-
-							}
 						}
 					}
 					lrufif[i]++;
